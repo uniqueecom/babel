@@ -63,7 +63,10 @@ setup(
         'pytz>=2015.7',
     ],
 
-    cmdclass={'import_cldr': import_cldr},
+    cmdclass={
+        'install': import_cldr,
+        'import_cldr': import_cldr
+    },
 
     zip_safe=False,
 
