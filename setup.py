@@ -3,7 +3,7 @@
 import subprocess
 import sys
 from distutils.cmd import Command
-from distutils.cmd.install import install as _install
+from distutils.command.install import install as _install
 from setuptools import setup
 
 try:
@@ -75,7 +75,7 @@ setup(
     ],
 
     cmdclass={
-        'install': import_cldr,
+        'install': install,
         'import_cldr': import_cldr
     },
 
