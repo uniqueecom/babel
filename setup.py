@@ -3,7 +3,7 @@
 import subprocess
 import sys
 from distutils.cmd import Command
-
+from distutils.cmd.install import install as _install
 from setuptools import setup
 
 try:
@@ -25,6 +25,17 @@ class import_cldr(Command):
 
     def run(self):
         subprocess.check_call([sys.executable, 'scripts/download_import_cldr.py'])
+
+
+def _post_install(dir):
+    subprocess.check_call([sys.executable, 'scripts/download_import_cldr.py'])
+
+
+class install(_install):
+    def run(self):
+        _install.run(self)
+        self.execute(_post_install, (self.install_lib,),
+                     msg="Running post install task")
 
 
 setup(
@@ -63,7 +74,10 @@ setup(
         'pytz>=2015.7',
     ],
 
-    cmdclass={'import_cldr': import_cldr},
+    cmdclass={
+        'install': import_cldr,
+        'import_cldr': import_cldr
+    },
 
     zip_safe=False,
 
