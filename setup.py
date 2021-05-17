@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 import subprocess
 import sys
 from distutils.cmd import Command
@@ -27,15 +27,16 @@ class import_cldr(Command):
         subprocess.check_call([sys.executable, 'scripts/download_import_cldr.py'])
 
 
-def _post_install(dir):
-    subprocess.check_call([sys.executable, 'scripts/download_import_cldr.py'])
+def _pre_install(dir):
+    subprocess.check_call([sys.executable, 'scripts/download_import_cldr.py'],
+                          cwd=os.path.join(dir, 'packagename'))
 
 
 class install(_install):
     def run(self):
+        self.execute(_pre_install, (self.install_lib,),
+                     msg="Running pre install task")
         _install.run(self)
-        self.execute(_post_install, (self.install_lib,),
-                     msg="Running post install task")
 
 
 setup(
