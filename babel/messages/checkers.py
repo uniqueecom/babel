@@ -44,7 +44,7 @@ def num_plurals(catalog, message):
 
 
 def python_format(catalog, message):
-    """Verify the format string placeholders in the translation."""
+    """Verify the 'c' style format string placeholders in the translation."""
     if 'python-format' not in message.flags:
         return
     msgids = message.id
@@ -57,6 +57,20 @@ def python_format(catalog, message):
     for msgid, msgstr in izip(msgids, msgstrs):
         if msgstr:
             _validate_format(msgid, msgstr)
+
+
+def python_brace_format(catalog, message):
+    """Verify the f-string style format string placeholders in the translation."""
+    if 'python-brace-format' not in message.flags:
+        return
+    msgids = message.id
+    if not isinstance(msgids, (list, tuple)):
+        msgids = (msgids,)
+    msgstrs = message.string
+    if not isinstance(msgstrs, (list, tuple)):
+        msgstrs = (msgstrs,)
+
+    return # TODO
 
 
 def _validate_format(format, alternative):
@@ -154,6 +168,7 @@ def _validate_format(format, alternative):
                                        (name, typechar, type_map[name]))
 
 
+
 def _find_checkers():
     checkers = []
     try:
@@ -166,7 +181,7 @@ def _find_checkers():
     if len(checkers) == 0:
         # if pkg_resources is not available or no usable egg-info was found
         # (see #230), just resort to hard-coded checkers
-        return [num_plurals, python_format]
+        return [num_plurals, python_format, python_brace_format]
     return checkers
 
 

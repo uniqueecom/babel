@@ -100,10 +100,18 @@ class Message(object):
         self.string = string
         self.locations = list(distinct(locations))
         self.flags = set(flags)
-        if id and self.python_format:
-            self.flags.add('python-format')
+
+        # if id and self.python_format:
+        #     self.flags.add('python-format')
+        # else:
+        #     self.flags.discard('python-format')
+        self.flags.discard('python-format')
+
+        if self.python_brace_format:
+            self.flags.add('python-brace-format')
         else:
-            self.flags.discard('python-format')
+            self.flags.discard('python-brace-format')
+
         self.auto_comments = list(distinct(auto_comments))
         self.user_comments = list(distinct(user_comments))
         if isinstance(previous_id, string_types):
@@ -209,6 +217,20 @@ class Message(object):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
         return any(PYTHON_FORMAT.search(id) for id in ids)
+
+    @property
+    def python_brace_format(self):
+        ids = self.id
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+        try:
+            for s in ids:
+                s.format()
+        except (KeyError, IndexError) as e:
+            return True
+
+        return False
+            
 
 
 class TranslationError(Exception):
